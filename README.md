@@ -1575,3 +1575,44 @@ The exported Go API of this module should currently be considered unstable, and 
 ## License
 
 This project is licensed under the terms of the MIT open source license. Please refer to [MIT](./LICENSE) for the full terms.
+
+
+---
+
+# Owned checkout guide
+
+## Purpose and status
+
+This owned source fork preserves GitHub’s MCP server README and notices. The official hosted service described above and a locally built server from this checkout are different operating contexts. Neither a local installation nor an owner deployment was established by this documentation work.
+
+## Repository map
+
+[`cmd/github-mcp-server/`](cmd/github-mcp-server/) defines the executable; [`pkg/`](pkg/) and [`internal/`](internal/) implement server/tool behavior; [`ui/`](ui/) supplies UI assets. [`docs/`](docs/), [`e2e/`](e2e/) and [`script/`](script/) cover documentation and validation tooling; [`Dockerfile`](Dockerfile), [`go.mod`](go.mod) and [`.goreleaser.yaml`](.goreleaser.yaml) describe build/release inputs.
+
+## Architecture and integrations
+
+The server exposes GitHub operations as MCP tools using configured credentials and tool selection. The executable supports stdio; the Docker image defaults to it. Toolsets, read-only mode and lockdown mode are explicit options, not evidence of the permissions in any deployed instance. Hosted authentication/setup described upstream is separate from local PAT configuration.
+
+## Setup and environments
+
+The local executable requires `GITHUB_PERSONAL_ACCESS_TOKEN` for its stdio path. Keep tokens out of source, logs and shared client configuration; authorize only the required repositories and permissions. The Go module declares Go 1.24.0, while the Docker build pins Go 1.25.8 and a Node 20 UI stage. Inspect the actual build path rather than assuming a single toolchain version; no dependencies or images were installed here.
+
+## Safe commands
+
+For documentation review, use local, read-only Git inspection: `git status --short`, `git ls-files`, `git diff -- README.md`, and `git diff --check`. Inspect scripts as text before considering execution. Installation, build, test, authentication and publication commands shown in the upstream documentation are outside this README-only review. Build/release scripts, container builds and MCP startup can download dependencies, create artifacts or access GitHub. Tool names that sound like inspection can still expose private repository data; do not invoke a server as a documentation check.
+
+## Testing and validation
+
+The root test script runs `go test -race ./...`; additional e2e and conformance tooling exists. None was executed here. Static checks cover this README only, not tool permissions, remote API behavior, server compatibility or release correctness.
+
+## Deployment and rollback
+
+Docker and release configuration document distribution mechanisms, not the owner’s live deployment. Hosted service operations cannot be rolled back by reverting this fork. For a future authorized local rollout, retain the prior binary/image and client configuration; reverting code does not undo GitHub writes already performed by tools. No release or publication occurred here.
+
+## Risks and guardrails
+
+The tool surface includes writes as well as reads. Explicitly review selected tools, token scope, `--read-only` and `--lockdown-mode` before activation; these controls do not replace credential least privilege. Preserve [MIT licensing](LICENSE), bundled third-party notices and [security guidance](SECURITY.md). No token was obtained, server started or GitHub mutation initiated by this README work.
+
+## Related documentation
+
+Consult the upstream configuration/tool documentation above, [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [docs](docs/), [scripts](script/) and [license](LICENSE).
